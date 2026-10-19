@@ -6,6 +6,7 @@ import org.example.memorymap.entity.PersonPhoto;
 import org.example.memorymap.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -58,5 +59,9 @@ public class PersonService {
     public BurialLocation getBurialLocation(Long personId) {
         Person person = getById(personId);
         return person.getBurialLocation();
+    }
+
+    public List<Person> getAll() {
+        return personRepository.findAll();
     }
 }

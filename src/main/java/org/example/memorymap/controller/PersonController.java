@@ -1,11 +1,14 @@
+
 package org.example.memorymap.controller;
 
+import org.example.memorymap.dto.PersonResponse;
 import org.example.memorymap.entity.BurialLocation;
 import org.example.memorymap.entity.Person;
 import org.example.memorymap.entity.PersonPhoto;
 import org.example.memorymap.service.PersonService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -18,9 +21,17 @@ public class PersonController {
         this.personService = personService;
     }
 
+    @GetMapping
+    public List<PersonResponse> getAll() {
+        return personService.getAll()
+                .stream()
+                .map(PersonResponse::from)
+                .toList();
+    }
+
     @GetMapping("/{id}")
-    public Person getById(@PathVariable Long id) {
-        return personService.getById(id);
+    public PersonResponse getById(@PathVariable Long id) {
+        return PersonResponse.from(personService.getById(id));
     }
 
     @PostMapping

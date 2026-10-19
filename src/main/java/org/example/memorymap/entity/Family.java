@@ -1,5 +1,6 @@
 package org.example.memorymap.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class Family {
     @ManyToMany(mappedBy = "families")
     private Set<User> users;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "family")
-    private Set<Person> persons = new HashSet<>();;
+    private Set<Person> persons = new HashSet<>();
 }
