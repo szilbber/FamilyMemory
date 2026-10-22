@@ -14,19 +14,13 @@ public record PersonResponse(
         Integer birthYear,
         LocalDate deathDate,
         Integer deathYear,
-        String biography
+        String biography,
+        Long familyId
 ) {
-    public static PersonResponse from(Person person) {
+    public static PersonResponse from(Person p) {
         return new PersonResponse(
-                person.getId(),
-                person.getFirstName(),
-                person.getLastName(),
-                person.getMiddleName(),
-                person.getBirthDate(),
-                person.getBirthYear(),
-                person.getDeathDate(),
-                person.getDeathYear(),
-                person.getBiography()
-        );
+                p.getId(), p.getFirstName(), p.getLastName(), p.getMiddleName(),
+                p.getBirthDate(), p.getBirthYear(), p.getDeathDate(), p.getDeathYear(),
+                p.getBiography(), p.getFamily().getId());
     }
 }

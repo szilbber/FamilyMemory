@@ -1,8 +1,12 @@
 package org.example.memorymap.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.example.memorymap.dto.PersonRequest;
 import org.example.memorymap.entity.BurialLocation;
+import org.example.memorymap.entity.Family;
 import org.example.memorymap.entity.Person;
 import org.example.memorymap.entity.PersonPhoto;
+import org.example.memorymap.repository.FamilyRepository;
 import org.example.memorymap.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +17,19 @@ import java.util.Set;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final FamilyRepository familyRepository;
 
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, FamilyRepository familyRepository) {
         this.personRepository = personRepository;
+        this.familyRepository = familyRepository;
     }
 
-    public Person create(Person person) {
+    public Person create(PersonRequest request) {
+        Family family = familyRepository.findById(request.familyId())
+                .orElseThrow(() -> new EntityNotFoundException("Family not found"));
+        Person person = new Person();
+        person.setFamily(family);
+        apply(person, request);
         return personRepository.save(person);
     }
 
@@ -27,23 +38,21 @@ public class PersonService {
         personRepository.delete(person);
     }
 
-    public Person update(Long id, Person person) {
+    public Person update(Long id, PersonRequest request) {
+        Person person = getById(id);
+        apply(person, request);
+        return personRepository.save(person);
+    }
 
-        Person updatedPerson = getById(id);
-
-        updatedPerson.setFirstName(person.getFirstName());
-        updatedPerson.setLastName(person.getLastName());
-        updatedPerson.setMiddleName(person.getMiddleName());
-
-        updatedPerson.setBirthDate(person.getBirthDate());
-        updatedPerson.setBirthYear(person.getBirthYear());
-
-        updatedPerson.setDeathDate(person.getDeathDate());
-        updatedPerson.setDeathYear(person.getDeathYear());
-
-        updatedPerson.setBiography(person.getBiography());
-
-        return personRepository.save(updatedPerson);
+    private void apply(Person p, PersonRequest r) {
+        p.setFirstName(r.firstName());
+        p.setLastName(r.lastName());
+        p.setMiddleName(r.middleName());
+        p.setBirthDate(r.birthDate());
+        p.setBirthYear(r.birthYear());
+        p.setDeathDate(r.deathDate());
+        p.setDeathYear(r.deathYear());
+        p.setBiography(r.biography());
     }
 
     public Person getById(Long id) {

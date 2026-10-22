@@ -1,9 +1,11 @@
 package org.example.memorymap.service;
 
+import org.example.memorymap.dto.BurialLocationRequest;
 import org.example.memorymap.entity.BurialLocation;
 import org.example.memorymap.entity.GravePhoto;
+import org.example.memorymap.entity.Person;
 import org.example.memorymap.repository.BurialLocationRepository;
-import org.example.memorymap.repository.GravePhotoRepository;
+import org.example.memorymap.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -12,14 +14,22 @@ import java.util.Set;
 public class BurialLocationService {
 
     private final BurialLocationRepository burialLocationRepository;
-    private final GravePhotoRepository gravePhotoRepository;
+    private final PersonRepository personRepository;
 
-    public BurialLocationService(BurialLocationRepository burialLocationRepository, GravePhotoRepository gravePhotoRepository) {
+    public BurialLocationService(BurialLocationRepository burialLocationRepository, PersonRepository personRepository) {
         this.burialLocationRepository = burialLocationRepository;
-        this.gravePhotoRepository = gravePhotoRepository;
+        this.personRepository = personRepository;
     }
 
-    public BurialLocation create(BurialLocation burialLocation) {
+    public BurialLocation create(BurialLocationRequest request) {
+        Person person = personRepository.findById(request.personId())
+                .orElseThrow(() -> new RuntimeException("Person not found"));
+        BurialLocation burialLocation = new BurialLocation();
+        burialLocation.setLatitude(request.latitude());
+        burialLocation.setLongitude(request.longitude());
+        burialLocation.setIsExact(request.isExact());
+        burialLocation.setDescription(request.description());
+        burialLocation.setPerson(person);
         return burialLocationRepository.save(burialLocation);
     }
 
@@ -28,13 +38,13 @@ public class BurialLocationService {
         burialLocationRepository.delete(burialLocation);
     }
 
-    public BurialLocation update(Long id, BurialLocation burialLocation) {
+    public BurialLocation update(Long id, BurialLocationRequest request) {
         BurialLocation updatedLocation = getById(id);
 
-        updatedLocation.setLatitude(burialLocation.getLatitude());
-        updatedLocation.setLongitude(burialLocation.getLongitude());
-        updatedLocation.setIsExact(burialLocation.getIsExact());
-        updatedLocation.setDescription(burialLocation.getDescription());
+        updatedLocation.setLatitude(request.latitude());
+        updatedLocation.setLongitude(request.longitude());
+        updatedLocation.setIsExact(request.isExact());
+        updatedLocation.setDescription(request.description());
 
         return burialLocationRepository.save(updatedLocation);
     }

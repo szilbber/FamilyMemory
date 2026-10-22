@@ -1,6 +1,9 @@
 package org.example.memorymap.controller;
 
-import org.example.memorymap.entity.User;
+import jakarta.validation.Valid;
+import org.example.memorymap.dto.UserCreateRequest;
+import org.example.memorymap.dto.UserResponse;
+import org.example.memorymap.dto.UserUpdateRequest;
 import org.example.memorymap.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,18 +18,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
-        return userService.getById(id);
+    public UserResponse getById(@PathVariable Long id) {
+        return UserResponse.from(userService.getById(id));
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        return userService.create(user);
+    public UserResponse create(@Valid @RequestBody UserCreateRequest request) {
+        return UserResponse.from(userService.create(request));
     }
 
     @PutMapping("/{id}")
-    public User update(@PathVariable Long id, @RequestBody User user) {
-        return userService.update(id, user);
+    public UserResponse update(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request) {
+        return UserResponse.from(userService.update(id, request));
     }
 
     @DeleteMapping("/{id}")

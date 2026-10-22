@@ -1,15 +1,18 @@
-
 package org.example.memorymap.controller;
 
+import jakarta.validation.Valid;
+import org.example.memorymap.dto.BurialLocationResponse;
+import org.example.memorymap.dto.PersonPhotoResponse;
+import org.example.memorymap.dto.PersonRequest;
 import org.example.memorymap.dto.PersonResponse;
 import org.example.memorymap.entity.BurialLocation;
-import org.example.memorymap.entity.Person;
-import org.example.memorymap.entity.PersonPhoto;
 import org.example.memorymap.service.PersonService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/persons")
@@ -35,13 +38,14 @@ public class PersonController {
     }
 
     @PostMapping
-    public Person create(@RequestBody Person person) {
-        return personService.create(person);
+    @ResponseStatus(HttpStatus.CREATED)
+    public PersonResponse create(@Valid @RequestBody PersonRequest request) {
+        return PersonResponse.from(personService.create(request));
     }
 
     @PutMapping("/{id}")
-    public Person update(@PathVariable Long id, @RequestBody Person person) {
-        return personService.update(id, person);
+    public PersonResponse update(@PathVariable Long id, @Valid @RequestBody PersonRequest request) {
+        return PersonResponse.from(personService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -50,12 +54,15 @@ public class PersonController {
     }
 
     @GetMapping("/{id}/photos")
-    public Set<PersonPhoto> getPhotos(@PathVariable Long id) {
-        return personService.getPhotos(id);
+    public Set<PersonPhotoResponse> getPhotos(@PathVariable Long id) {
+        return personService.getPhotos(id).stream()
+                .map(PersonPhotoResponse::from)
+                .collect(Collectors.toSet());
     }
 
     @GetMapping("/{id}/burial-location")
-    public BurialLocation getBurialLocation(@PathVariable Long id) {
-        return personService.getBurialLocation(id);
+    public BurialLocationResponse getBurialLocation(@PathVariable Long id) {
+        BurialLocation location = personService.getBurialLocation(id);
+        return location == null ? null : BurialLocationResponse.from(location);
     }
 }

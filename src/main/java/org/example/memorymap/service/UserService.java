@@ -1,5 +1,7 @@
 package org.example.memorymap.service;
 
+import org.example.memorymap.dto.UserCreateRequest;
+import org.example.memorymap.dto.UserUpdateRequest;
 import org.example.memorymap.entity.User;
 import org.example.memorymap.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User create(User user) {
+    public User create(UserCreateRequest request) {
+        User user = new User();
+        user.setName(request.name());
+        user.setEmail(request.email());
+        user.setPasswordHash(request.password());
         return userRepository.save(user);
     }
 
@@ -22,12 +28,10 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User update(Long id, User user){
-
+    public User update(Long id, UserUpdateRequest request) {
         User updatedUser = getById(id);
-        updatedUser.setName(user.getName());
-        updatedUser.setEmail(user.getEmail());
-
+        updatedUser.setName(request.name());
+        updatedUser.setEmail(request.email());
         return userRepository.save(updatedUser);
     }
 

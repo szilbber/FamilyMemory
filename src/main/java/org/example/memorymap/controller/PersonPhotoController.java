@@ -1,6 +1,8 @@
 package org.example.memorymap.controller;
 
-import org.example.memorymap.entity.PersonPhoto;
+import jakarta.validation.Valid;
+import org.example.memorymap.dto.PersonPhotoRequest;
+import org.example.memorymap.dto.PersonPhotoResponse;
 import org.example.memorymap.service.PersonPhotoService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,18 +17,18 @@ public class PersonPhotoController {
     }
 
     @GetMapping("/{id}")
-    public PersonPhoto getById(@PathVariable Long id) {
-        return personPhotoService.getById(id);
+    public PersonPhotoResponse getById(@PathVariable Long id) {
+        return PersonPhotoResponse.from(personPhotoService.getById(id));
     }
 
     @PostMapping
-    public PersonPhoto create(@RequestBody PersonPhoto personPhoto) {
-        return personPhotoService.create(personPhoto);
+    public PersonPhotoResponse create(@Valid @RequestBody PersonPhotoRequest request) {
+        return PersonPhotoResponse.from(personPhotoService.create(request));
     }
 
     @PutMapping("/{id}")
-    public PersonPhoto update(@PathVariable Long id, @RequestBody PersonPhoto personPhoto) {
-        return personPhotoService.update(id, personPhoto);
+    public PersonPhotoResponse update(@PathVariable Long id, @Valid @RequestBody PersonPhotoRequest request) {
+        return PersonPhotoResponse.from(personPhotoService.update(id, request));
     }
 
     @DeleteMapping("/{id}")

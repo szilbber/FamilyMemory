@@ -1,6 +1,9 @@
 package org.example.memorymap.service;
 
+import org.example.memorymap.dto.GravePhotoRequest;
+import org.example.memorymap.entity.BurialLocation;
 import org.example.memorymap.entity.GravePhoto;
+import org.example.memorymap.repository.BurialLocationRepository;
 import org.example.memorymap.repository.GravePhotoRepository;
 import org.springframework.stereotype.Service;
 
@@ -8,12 +11,20 @@ import org.springframework.stereotype.Service;
 public class GravePhotoService {
 
     private final GravePhotoRepository gravePhotoRepository;
+    private final BurialLocationRepository burialLocationRepository;
 
-    public GravePhotoService(GravePhotoRepository gravePhotoRepository) {
+    public GravePhotoService(GravePhotoRepository gravePhotoRepository, BurialLocationRepository burialLocationRepository) {
         this.gravePhotoRepository = gravePhotoRepository;
+        this.burialLocationRepository = burialLocationRepository;
     }
 
-    public GravePhoto create(GravePhoto gravePhoto) {
+    public GravePhoto create(GravePhotoRequest request) {
+        BurialLocation burialLocation = burialLocationRepository.findById(request.burialId())
+                .orElseThrow(() -> new RuntimeException("BurialLocation Not Found"));
+        GravePhoto gravePhoto = new GravePhoto();
+        gravePhoto.setFileUrl(request.fileUrl());
+        gravePhoto.setTitle(request.title());
+        gravePhoto.setBurialLocation(burialLocation);
         return gravePhotoRepository.save(gravePhoto);
     }
 
@@ -22,11 +33,11 @@ public class GravePhotoService {
         gravePhotoRepository.delete(gravePhoto);
     }
 
-    public GravePhoto update(Long id, GravePhoto gravePhoto) {
+    public GravePhoto update(Long id, GravePhotoRequest request) {
         GravePhoto updatedPhoto = getById(id);
 
-        updatedPhoto.setTitle(gravePhoto.getTitle());
-        updatedPhoto.setFileUrl(gravePhoto.getFileUrl());
+        updatedPhoto.setTitle(request.title());
+        updatedPhoto.setFileUrl(request.fileUrl());
 
         return gravePhotoRepository.save(updatedPhoto);
     }

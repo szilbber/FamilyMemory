@@ -1,5 +1,8 @@
 package org.example.memorymap.controller;
 
+import jakarta.validation.Valid;
+import org.example.memorymap.dto.GravePhotoRequest;
+import org.example.memorymap.dto.GravePhotoResponse;
 import org.example.memorymap.entity.GravePhoto;
 import org.example.memorymap.service.GravePhotoService;
 import org.springframework.web.bind.annotation.*;
@@ -15,21 +18,21 @@ public class GravePhotoController {
     }
 
     @GetMapping("/{id}")
-    public GravePhoto getById(@PathVariable Long id) {
-        return gravePhotoService.getById(id);
+    public GravePhotoResponse getById(@PathVariable Long id) {
+        return GravePhotoResponse.from(gravePhotoService.getById(id));
     }
 
     @PostMapping
-    public GravePhoto create(@RequestBody GravePhoto gravePhoto) {
-        return gravePhotoService.create(gravePhoto);
+    public GravePhotoResponse create(@Valid  @RequestBody GravePhotoRequest request) {
+        return GravePhotoResponse.from(gravePhotoService.create(request));
     }
 
     @PutMapping("/{id}")
-    public GravePhoto update(
+    public GravePhotoResponse update(
             @PathVariable Long id,
-            @RequestBody GravePhoto gravePhoto
+            @Valid @RequestBody GravePhotoRequest request
     ) {
-        return gravePhotoService.update(id, gravePhoto);
+        return GravePhotoResponse.from(gravePhotoService.update(id, request));
     }
 
     @DeleteMapping("/{id}")

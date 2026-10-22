@@ -1,10 +1,15 @@
 package org.example.memorymap.controller;
 
+import jakarta.validation.Valid;
+import org.example.memorymap.dto.BurialLocationRequest;
+import org.example.memorymap.dto.BurialLocationResponse;
+import org.example.memorymap.dto.GravePhotoResponse;
 import org.example.memorymap.entity.BurialLocation;
 import org.example.memorymap.entity.GravePhoto;
 import org.example.memorymap.service.BurialLocationService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -18,18 +23,19 @@ public class BurialLocationController {
     }
 
     @GetMapping("/{id}")
-    public BurialLocation getById(@PathVariable Long id) {
-        return burialLocationService.getById(id);
+    public BurialLocationResponse getById(@PathVariable Long id) {
+        return BurialLocationResponse.from(burialLocationService.getById(id));
     }
 
     @PostMapping
-    public BurialLocation create(@RequestBody BurialLocation burialLocation) {
-        return burialLocationService.create(burialLocation);
+    public BurialLocationResponse create(@Valid @RequestBody BurialLocationRequest request) {
+        return BurialLocationResponse.from(burialLocationService.create(request));
     }
 
     @PutMapping("/{id}")
-    public BurialLocation update(@PathVariable Long id, @RequestBody BurialLocation burialLocation) {
-        return burialLocationService.update(id, burialLocation);
+    public BurialLocationResponse update(@PathVariable Long id,
+                                         @Valid @RequestBody BurialLocationRequest request) {
+        return BurialLocationResponse.from(burialLocationService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -38,7 +44,9 @@ public class BurialLocationController {
     }
 
     @GetMapping("/{id}/grave-photos")
-    public Set<GravePhoto> getGravePhotos(@PathVariable Long id) {
-        return burialLocationService.getGravePhotos(id);
+    public List<GravePhotoResponse> getGravePhotos(@PathVariable Long id) {
+        return burialLocationService.getGravePhotos(id).stream()
+                .map(GravePhotoResponse::from)
+                .toList();
     }
 }

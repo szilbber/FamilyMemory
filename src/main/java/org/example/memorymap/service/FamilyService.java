@@ -1,5 +1,6 @@
 package org.example.memorymap.service;
 
+import org.example.memorymap.dto.FamilyRequest;
 import org.example.memorymap.entity.Family;
 import org.example.memorymap.entity.Person;
 import org.example.memorymap.entity.User;
@@ -18,8 +19,10 @@ public class FamilyService {
         this.familyRepository = familyRepository;
     }
 
-    public Family create(Family family) {
-        return familyRepository.save(family);
+    public Family create(FamilyRequest request) {
+        Family newFamily = new Family();
+        newFamily.setName(request.name());
+        return familyRepository.save(newFamily);
     }
 
     public void delete(Long id) {
@@ -27,9 +30,9 @@ public class FamilyService {
         familyRepository.delete(family);
     }
 
-    public Family update(Long id, Family family) {
+    public Family update(Long id, FamilyRequest request) {
         Family updatedFamily = getById(id);
-        updatedFamily.setName(family.getName());
+        updatedFamily.setName(request.name());
         return familyRepository.save(updatedFamily);
     }
 
